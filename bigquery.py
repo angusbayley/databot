@@ -13,6 +13,10 @@ today = dt.date.today()
 this_month = dt.date(today.year, today.month, 1)
 last_month = this_month - dateutil.relativedelta.relativedelta(months=1)
 
+# [TODO] Instead of querying BigQuery directly, replace this logic (and that in parse_big_query_data.py)
+# with a monkey-patched version of the read_gbq method in Pandas. The method is much fancier, but currently
+# uses Legacy SQL, and we want to use standard SQL.
+
 def revenue_summary():
     revenue_last_two_months = run_query('revenue_last_two_months.sql')
     revenue_this_month = revenue_last_two_months[revenue_last_two_months['month'] == this_month]
