@@ -2,6 +2,7 @@ import os
 import time
 from slackclient import SlackClient
 from bigquery import revenue_summary
+from raven import Client
 
 BOT_ID = os.environ.get('DATABOT_ID')
 
@@ -31,11 +32,15 @@ def parse_slack_output(slack_rtm_output):
 
 if __name__ == '__main__':
 
-    if slack_client.rtm_connect():
-        print("websocket open for business")
-        while True:
-            parse_slack_output(slack_client.rtm_read())
-            time.sleep(1)
-    else:
-        # print(slack_client.rtm_connect())
-        print('problem with connection')
+    try:
+        if slack_client.rtm_connect():
+            print("websocket open for business")
+            while True:
+                parse_slack_output(slack_client.rtm_read())
+                time.sleep(1)
+        else:
+            # print(slack_client.rtm_connect())
+            print('problem with connection')
+    except:
+        client = Client(os.environ.get('DATABOT_SNITCH_URL'))
+        client.captureException()
