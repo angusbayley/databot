@@ -1,6 +1,7 @@
 import os
 import time
 from slackclient import SlackClient
+from bigquery import revenue_summary
 
 BOT_ID = os.environ.get('DATABOT_ID')
 
@@ -13,13 +14,17 @@ def parse_slack_output(slack_rtm_output):
         if 'text' in message and '<@' + BOT_ID + '>' in message['text']:
             print(message)
             channel_id = message['channel']
-            # do tableau stuff
-
-            # post tableau stuff back to channel
-            request = slack_client.api_call("chat.postMessage",
-                                            channel=channel_id,
-                                            text='you called?',
-                                            as_user=True)
+            if 'revenue' in message['text']:
+                revenue_this_month, revenue_last_month = revenue_summary()
+                request = slack_client.api_call("chat.postMessage",
+                                channel=channel_id,
+                                text=round(revenue_this_month.iloc[-1]['revenue_running_sum']),
+                                as_user=True)
+            else:
+                request = slack_client.api_call("chat.postMessage",
+                                                channel=channel_id,
+                                                text='you called?',
+                                                as_user=True)
         else:
             print(message)
 
