@@ -21,6 +21,12 @@ def parse_slack_output(slack_rtm_output):
                                 channel=channel_id,
                                 text=round(revenue_this_month.iloc[-1]['revenue_running_sum']),
                                 as_user=True)
+            if 'volume' in message['text']:
+                volume_this_month, volume_last_month = volume_summary()
+                request = slack_client.api_call("chat.postMessage",
+                                channel=channel_id,
+                                text=round(volume_this_month.iloc[-1]['volume_running_sum']),
+                                as_user=True)
             else:
                 request = slack_client.api_call("chat.postMessage",
                                                 channel=channel_id,

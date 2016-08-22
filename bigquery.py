@@ -25,6 +25,14 @@ def revenue_summary():
     revenue_last_month['revenue_running_sum'] = revenue_last_month.revenue.cumsum()
     return revenue_this_month, revenue_last_month
 
+def volume_summary():
+    volume_last_two_months = run_query('volume_last_two_months.sql')
+    volume_this_month = volume_last_two_months[volume_last_two_months['month'] == this_month]
+    volume_this_month['volume_running_sum'] = volume_this_month.volume.cumsum()
+    volume_last_month = volume_last_two_months[volume_last_two_months['month'] == last_month]
+    volume_last_month['volume_running_sum'] = volume_last_month.volume.cumsum()
+    return volume_this_month, volume_last_month
+
 def run_query(query_filename):
     service = discovery.build('bigquery', 'v2', credentials=credentials)
 
